@@ -1,4 +1,4 @@
 # esphome
 
-### esphome for Hitachi PC-P1KQNT
+### Hitachi PC-P1KQNT ERV Wired Controller
 
