@@ -17,7 +17,7 @@ esp32:
 
 # Enable logging
 logger:
-  level: DEBUG
+  #level: DEBUG
   baud_rate: 0
 
 # Enable Home Assistant API
@@ -118,14 +118,16 @@ sensor:
   - platform: internal_temperature
     name: "ESP Temperature"
 
-  - platform: modbus_controller
-    modbus_controller_id: modbus_device
-    name: "Indoor Temperature"
-    register_type: holding
-    address: 0x00
-    unit_of_measurement: "℃"
-    accuracy_decimals: 0
-    icon: "mdi:thermometer"
+  # Disabled because some error message
+  #- platform: modbus_controller
+  #  modbus_controller_id: modbus_device
+  #  name: "Indoor Temperature"
+  #  register_type: read
+  #  address: 0
+  #  unit_of_measurement: "℃"
+  #  accuracy_decimals: 0
+  #  icon: "mdi:thermometer"
+  #  register_count: 6
 
 text_sensor:
   - platform: version
