@@ -88,7 +88,7 @@ select:
     optionsmap:
       "Auto": 1
       "Heat Exchange": 8
-      "Ventilate": 16
+      "Normal": 16
     optimistic: true
   - platform: modbus_controller
     modbus_controller_id: modbus_device
