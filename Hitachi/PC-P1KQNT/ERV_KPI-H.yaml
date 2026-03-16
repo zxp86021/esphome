@@ -23,11 +23,11 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "qIa0q7HLezs4Q49gzL8ydUcDkVqhBGzSJycI4ymPhUo="
+    key: !secret api_encryption_key
 
 ota:
   - platform: esphome
-    password: "cc4ad74000f49d24ebc388d0fe0209af"
+    password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -36,7 +36,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Hitachi-Heat-Exchanger"
-    password: "o3MVeofVOU5C"
+    password: !secret wifi_ap_password
 
 captive_portal:
 
@@ -47,12 +47,12 @@ uart:
   baud_rate: 9600
   stop_bits: 1
   parity: NONE
-  debug:
-    direction: BOTH
-    dummy_receiver: false
+  #debug:
+  #  direction: BOTH
+  #  dummy_receiver: false
 
 modbus:
-  #flow_control_pin: GPIO20
+  #flow_control_pin: GPIOXX
   uart_id: uart_modbus
   id: modbus1
 
@@ -80,27 +80,24 @@ button:
   - platform: restart
     name: "Restart"
 
-#number:
-#  - platform: modbus_controller
-#    modbus_controller_id: modbus_device
-#    name: "Fan Level"
-#    register_type: holding
-#    address: 0x22
-#    value_type: U_WORD
-#    min_value: 2
-#    max_value: 4
-#    step: 2
-
 select:
   - platform: modbus_controller
     modbus_controller_id: modbus_device
-    name: "Mode"
-    #register_type: holding
+    name: "Ventilate Mode"
     address: 0x21
     optionsmap:
-      "自動": 1
-      "熱交換": 8
-      "換氣": 16
+      "Auto": 1
+      "Heat Exchange": 8
+      "Ventilate": 16
+    optimistic: true
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Fan Speed"
+    address: 0x22
+    optionsmap:
+      "Hi": 2
+      "Low": 4
+    optimistic: true
 
 sensor:
   - platform: wifi_signal
@@ -124,18 +121,6 @@ sensor:
     address: 0x00
     unit_of_measurement: "℃"
     accuracy_decimals: 0
-
-  - platform: modbus_controller
-    modbus_controller_id: modbus_device
-    name: "Mode"
-    register_type: holding
-    address: 0x21
-
-  - platform: modbus_controller
-    modbus_controller_id: modbus_device
-    name: "Fan Level"
-    register_type: holding
-    address: 0x22
 
 text_sensor:
   - platform: version
