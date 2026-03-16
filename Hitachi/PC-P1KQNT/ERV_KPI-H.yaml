@@ -124,10 +124,10 @@ sensor:
   #  name: "Indoor Temperature"
   #  register_type: read
   #  address: 0
+  #  value_type: U_WORD
   #  unit_of_measurement: "℃"
   #  accuracy_decimals: 0
   #  icon: "mdi:thermometer"
-  #  register_count: 6
 
 text_sensor:
   - platform: version
