@@ -55,6 +55,7 @@ modbus:
   #flow_control_pin: GPIOXX
   uart_id: uart_modbus
   id: modbus1
+  send_wait_time: 300ms
 
 modbus_controller:
 - id: modbus_device
@@ -90,6 +91,8 @@ select:
       "Heat Exchange": 8
       "Normal": 16
     optimistic: true
+    icon: "mdi:cog"
+
   - platform: modbus_controller
     modbus_controller_id: modbus_device
     name: "Fan Speed"
@@ -98,6 +101,7 @@ select:
       "Hi": 2
       "Low": 4
     optimistic: true
+    icon: "mdi:fan"
 
 sensor:
   - platform: wifi_signal
@@ -121,6 +125,7 @@ sensor:
     address: 0x00
     unit_of_measurement: "℃"
     accuracy_decimals: 0
+    icon: "mdi:thermometer"
 
 text_sensor:
   - platform: version
