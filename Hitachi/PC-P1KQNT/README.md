@@ -3,6 +3,9 @@
 - RS-485 to TTL Conversion Module
 - AMS1117 Based 5V Power Module (or other DC 12v to DC 5v Module)
 
+### PC-P1KQNT Controller Setup
+- Modbus address set in PC-P1KQNT Controller need match with `modbus_controller.address` in yaml file
+
 ### Register Chart
 
 Resgister Address | Item | Resgister Value
