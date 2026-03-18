@@ -9,6 +9,7 @@
 ### Wiring
 - Power Module input to PC-P1KQNT 12V OUT and GND
 - RS-485 Conversion Module A/B to PC-P1KQNT 485-2 A/B
+![PC-P1KQNT connectors](https://)
 
 ### Register Chart
 
