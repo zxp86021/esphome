@@ -61,6 +61,7 @@ modbus_controller:
 - id: modbus_device
   address: 0x1   ## address of the Modbus slave device on the bus
   modbus_id: modbus1
+  command_throttle: 300ms
   setup_priority: -10
   update_interval: 5s
 
@@ -123,7 +124,7 @@ sensor:
   #  modbus_controller_id: modbus_device
   #  name: "Indoor Temperature"
   #  register_type: read
-  #  address: 0
+  #  address: 0x00
   #  value_type: U_WORD
   #  unit_of_measurement: "℃"
   #  accuracy_decimals: 0
