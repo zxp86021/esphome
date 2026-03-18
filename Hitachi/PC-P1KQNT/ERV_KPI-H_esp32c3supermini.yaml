@@ -55,13 +55,13 @@ modbus:
   #flow_control_pin: GPIOXX
   uart_id: uart_modbus
   id: modbus1
-  send_wait_time: 300ms
+  send_wait_time: 250ms
 
 modbus_controller:
 - id: modbus_device
   address: 0x1   ## address of the Modbus slave device on the bus
   modbus_id: modbus1
-  command_throttle: 300ms
+  command_throttle: 100ms
   setup_priority: -10
   update_interval: 5s
 
