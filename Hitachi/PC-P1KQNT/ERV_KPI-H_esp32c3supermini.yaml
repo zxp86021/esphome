@@ -85,6 +85,7 @@ button:
 select:
   - platform: modbus_controller
     modbus_controller_id: modbus_device
+    id: "select_ventilate_mode"
     name: "Ventilate Mode"
     address: 0x21
     optionsmap:
@@ -96,6 +97,7 @@ select:
 
   - platform: modbus_controller
     modbus_controller_id: modbus_device
+    id: "select_fan_speed"
     name: "Fan Speed"
     address: 0x22
     optionsmap:
@@ -103,6 +105,17 @@ select:
       "Low": 4
     optimistic: true
     icon: "mdi:fan"
+    on_value:
+      then:
+        - lambda: |-
+            if (id(fan_speed_power).state) {
+              if (x.c_str() == "Hi" && id(fan_speed_power).speed != 2) {
+                id(fan_speed_power).make_call().set_speed(2).perform();
+              }
+              if (x.c_str() == "Low" && id(fan_speed_power).speed != 1) {
+                id(fan_speed_power).make_call().set_speed(1).perform();
+              }
+            }
 
 sensor:
   - platform: wifi_signal
@@ -140,13 +153,61 @@ text_sensor:
 switch:
   - platform: modbus_controller
     modbus_controller_id: modbus_device
+    id: "switch_power"
     name: "Power"
     register_type: holding
     address: 0x20
     use_write_multiple: false
     bitmask: 1
     icon: "mdi:power"
+    on_turn_on:
+      if:
+        condition:
+          fan.is_off: fan_speed_power
+        then:
+          - fan.turn_on:
+              id: fan_speed_power
+              speed: !lambda |-
+                if (id(select_fan_speed).current_option() == "Hi") {
+                  return 2;
+                } else {
+                  return 1;
+                }
+    on_turn_off:
+      if:
+        condition:
+          fan.is_on: fan_speed_power
+        then:
+          - fan.turn_off: fan_speed_power
 
 time:
   - platform: homeassistant
     id: homeassistant_time
+
+fan:
+  - platform: template
+    id: "fan_speed_power"
+    name: "Fan Speed Power"
+    has_direction: false
+    has_oscillating: false
+    speed_count: 2
+    on_turn_on:
+      if:
+        condition:
+          switch.is_off: switch_power
+        then:
+          - switch.turn_on: switch_power
+    on_turn_off:
+      if:
+        condition:
+          switch.is_on: switch_power
+        then:
+          - switch.turn_off: switch_power
+    on_speed_set:
+      - lambda: |-
+          if (x == 2 && id(select_fan_speed).current_option() != "Hi") {
+            id(select_fan_speed).make_call().set_option("Hi").perform();
+          }
+          if (x == 1 && id(select_fan_speed).current_option() != "Low") {
+            id(select_fan_speed).make_call().set_option("Low").perform();
+          }
