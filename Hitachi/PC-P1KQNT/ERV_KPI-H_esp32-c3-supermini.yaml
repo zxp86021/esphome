@@ -1,26 +1,26 @@
+# Board: ESP32-C3 Super Mini (Generic)
+# Definition: definitions/boards/esp32-c3-supermini/manifest.yaml
 substitutions:
   upper_devicename: "Hitachi ERV KPI-153H"
 
 esphome:
-  name: "hitachi-heat-exchanger"
-  friendly_name: "hitachi-heat-exchanger"
+  name: hitachi-pc-p1kqnt
+  friendly_name: Hitachi PC-P1KQNT
   comment: $upper_devicename
   project:
-    name: Hitachi.KPI-153H
-    version: "1.0"
+    name: Hitachi.PC-P1KQNT
+    version: "1.1"
 
 esp32:
   variant: esp32c3
-  board: esp32-c3-devkitm-1
+  flash_size: 4MB
   framework:
-    type: arduino
+    type: esp-idf
 
-# Enable logging
 logger:
   level: ERROR #NONE, ERROR, WARN, INFO, DEBUG
   baud_rate: 0
 
-# Enable Home Assistant API
 api:
   encryption:
     key: !secret api_encryption_key
@@ -32,10 +32,8 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Hitachi-Heat-Exchanger"
+    ssid: Hitachi PC-P1KQNT
     password: !secret wifi_ap_password
 
 captive_portal:
@@ -54,13 +52,13 @@ uart:
 modbus:
   #flow_control_pin: GPIOXX
   uart_id: uart_modbus
-  id: modbus1
+  id: modbus_component
   send_wait_time: 250ms
 
 modbus_controller:
 - id: modbus_device
   address: 0x1   ## address of the Modbus slave device on the bus
-  modbus_id: modbus1
+  modbus_id: modbus_component
   command_throttle: 100ms
   setup_priority: -10
   update_interval: 5s
@@ -89,9 +87,9 @@ select:
     name: "Ventilate Mode"
     address: 0x21
     optionsmap:
-      "Auto": 1
+      "Recirculation": 1
       "Heat Exchange": 8
-      "Normal": 16
+      "Bypass": 16
     optimistic: true
     icon: "mdi:cog"
 
@@ -108,12 +106,12 @@ select:
     on_value:
       then:
         - lambda: |-
-            if (id(fan_speed_power).state) {
-              if (x.c_str() == "Hi" && id(fan_speed_power).speed != 2) {
-                id(fan_speed_power).make_call().set_speed(2).perform();
+            if (id(fan_control_panel).state) {
+              if (x.c_str() == "Hi" && id(fan_control_panel).speed != 2) {
+                id(fan_control_panel).make_call().set_speed(2).perform();
               }
-              if (x.c_str() == "Low" && id(fan_speed_power).speed != 1) {
-                id(fan_speed_power).make_call().set_speed(1).perform();
+              if (x.c_str() == "Low" && id(fan_control_panel).speed != 1) {
+                id(fan_control_panel).make_call().set_speed(1).perform();
               }
             }
 
@@ -163,10 +161,10 @@ switch:
     on_turn_on:
       if:
         condition:
-          fan.is_off: fan_speed_power
+          fan.is_off: fan_control_panel
         then:
           - fan.turn_on:
-              id: fan_speed_power
+              id: fan_control_panel
               speed: !lambda |-
                 if (id(select_fan_speed).current_option() == "Hi") {
                   return 2;
@@ -176,9 +174,9 @@ switch:
     on_turn_off:
       if:
         condition:
-          fan.is_on: fan_speed_power
+          fan.is_on: fan_control_panel
         then:
-          - fan.turn_off: fan_speed_power
+          - fan.turn_off: fan_control_panel
 
 time:
   - platform: homeassistant
@@ -186,11 +184,15 @@ time:
 
 fan:
   - platform: template
-    id: "fan_speed_power"
-    name: "Fan Speed Power"
+    id: "fan_control_panel"
+    name: "Fan Control Panel"
     has_direction: false
     has_oscillating: false
     speed_count: 2
+    preset_modes:
+      - 內循環
+      - 熱交換
+      - 外循環
     on_turn_on:
       if:
         condition:
